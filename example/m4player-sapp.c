@@ -24,18 +24,12 @@
 
 #define M4PLAYER_SRCBUF_SAMPLES (4096)
 
-static int16_t m4p_buf[M4PLAYER_SRCBUF_SAMPLES];
-
 // common function to read sample stream from mod4play and convert to float
 static void read_samples(float* buffer, int num_samples) {
     assert(num_samples <= M4PLAYER_SRCBUF_SAMPLES);
-    memset(m4p_buf, 0, M4PLAYER_SRCBUF_SAMPLES*sizeof(int16_t));
     // NOTE: for multi-channel playback, the samples are interleaved
     // (e.g. left/right/left/right/...)
-    m4p_GenerateSamples(m4p_buf, M4PLAYER_SRCBUF_SAMPLES/sizeof(int16_t));
-    for (int i = 0; i < num_samples; i++) {
-        buffer[i] = (float)m4p_buf[i]/32768;
-    }
+    m4p_GenerateFloatSamples(buffer, num_samples * 2 /* num_channels */ / sizeof(float));
 }
 
 // stream callback, called by sokol_audio when new samples are needed,
