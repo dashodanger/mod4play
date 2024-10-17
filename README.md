@@ -1,8 +1,8 @@
 # mod4play
-This is a unified interface for the ft2play (https://github.com/8bitbubsy/ft2play) and it2play (https://github.com/8bitbubsy/it2play) libraries by Olav Sørensen for embedding in game engines or other applications. SDL and winmm dependencies have been removed; the library is intended to receive an in-memory IT, S3M, MOD, or XM format module and produce samples on demand. All mixing drivers other than SB16 have been removed for simplicity. 
+This is a unified interface for the ft2play (https://github.com/8bitbubsy/ft2play) and it2play (https://github.com/8bitbubsy/it2play) libraries by Olav Sørensen for embedding in game engines or other applications. SDL and winmm dependencies have been removed; the library is intended to receive an in-memory IT, S3M, MOD, or XM format module and produce samples on demand. All mixing drivers other than SB16 have been removed for simplicity.
 
 # Compilation
-A simple example CMakeLists file (CMakeLists-LibraryOnlyExample) has been included showing which files need to be compiled. Include `m4p.h` in the source file that you are using to handle IT/S3M/MOD/XM playback.
+A simple `CMakeLists.txt` file has been included showing which files need to be compiled. Include `m4p.h` in the source file that you are using to handle IT/S3M/MOD/XM playback.
 
 To compile a test program, please use the regular CMakeLists file in this directory. It will build a small program that displays a window and replays an embedded MOD file.
   - The test program uses the Sokol libraries which are zlib-licensed and is based on the mod player example from sokol-samples, which is MIT licensed. Neither of these licenses affect mod4play when compiled on its own.
