@@ -1,5 +1,7 @@
 # mod4play
-This is a unified interface for the ft2play (https://github.com/8bitbubsy/ft2play) and it2play (https://github.com/8bitbubsy/it2play) libraries by Olav Sørensen for embedding in game engines or other applications. SDL and winmm dependencies have been removed; the library is intended to receive an in-memory IT, S3M, MOD, or XM format module and produce samples on demand. All mixing drivers other than SB16 have been removed for simplicity.
+This is a unified interface for the ft2play (https://github.com/8bitbubsy/ft2play) and it2play (https://github.com/8bitbubsy/it2play) libraries by Olav Sørensen for embedding in game engines or other applications.
+SDL and WinMM dependencies have been removed;
+the library is intended to receive an in-memory IT, S3M, MOD, or XM format module and produce samples on demand. All mixing drivers other than SB16 have been removed for simplicity.
 
 # Compilation
 A simple `CMakeLists.txt` file has been included showing which files need to be compiled. Include `m4p.h` in the source file that you are using to handle IT/S3M/MOD/XM playback.
