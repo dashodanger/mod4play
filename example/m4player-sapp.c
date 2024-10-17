@@ -16,7 +16,7 @@
 #include "sokol/sokol_audio.h"
 #include "sokol/sokol_log.h"
 #include "sokol/sokol_glue.h"
-#include "../m4p.h"
+#include "../src/m4p.h"
 #include "data/mods.h"
 #include <assert.h>
 #include <stdint.h>
