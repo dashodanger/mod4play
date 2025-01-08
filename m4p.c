@@ -6379,7 +6379,10 @@ static void SB16_SetTempo(uint8_t Tempo)
 
 static void SB16_SetMixVolume(uint8_t vol)
 {
-    MixVolume = vol;
+    // dasho: shifted to try to have more 'parity' with
+    // the FT2 default output volume; it can be a bit
+    // jarring otherwise
+    MixVolume = vol >> 2;
     RecalculateAllVolumes();
 }
 
