@@ -1,7 +1,8 @@
 ##########################################
 # m4player
 ##########################################
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.25)
+
 project(
   m4player
   LANGUAGES C
@@ -14,25 +15,17 @@ add_executable(
 
 add_library(
   m4p
-  ../src/it2drivers/sb16_m.c
-  ../src/it2drivers/sb16.c
-  ../src/it2drivers/zerovol.c
-  ../src/loaders/mmcmp/mmcmp.c
-  ../src/loaders/it.c
-  ../src/loaders/s3m.c
-  ../src/m4p.c
-  ../src/ft_tables.c
-  ../src/it_d_rm.c
-  ../src/it_m_eff.c
-  ../src/it_music.c
-  ../src/it_tables.c
-  ../src/pmp_main.c
-  ../src/pmp_mix.c
-  ../src/pmplay.c
-  ../src/snd_masm.c
+  ../m4p.c
 )
 
-target_link_libraries(m4player m4p) 
+set(M4PLAYER_LINK_LIBRARIES m4p)
+
+# sokol_app/sokol_audio linked libraries
+if (CMAKE_HOST_LINUX)
+  set(M4PLAYER_LINK_LIBRARIES ${M4PLAYER_LINK_LIBRARIES} asound X11 Xi Xcursor GL dl pthread m)
+endif()
+
+target_link_libraries(m4player ${M4PLAYER_LINK_LIBRARIES}) 
 
 add_custom_command(
   TARGET m4player

@@ -16,9 +16,10 @@
 #include "sokol/sokol_audio.h"
 #include "sokol/sokol_log.h"
 #include "sokol/sokol_glue.h"
-#include "../src/m4p.h"
+#include "../m4p.h"
 #include "data/mods.h"
 #include <assert.h>
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -69,10 +70,10 @@ void frame(void* user_data) {
 
 void cleanup(void* user_data) {
     (void)user_data;
+    saudio_shutdown();
     m4p_Stop();
     m4p_Close();
     m4p_FreeSong();
-    saudio_shutdown();
     sg_shutdown();
 }
 
