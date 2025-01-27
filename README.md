@@ -4,7 +4,7 @@ SDL and WinMM dependencies have been removed;
 the library is intended to receive an in-memory IT, S3M, MOD, FT or XM format module and produce samples on demand. All mixing drivers other than SB16/SND_MASM have been removed for simplicity.
 
 # Compilation
-`m4p.c` is the only file that needs to be added to your Makefile/CMakeLists/etc. Include `m4p.h` in the source file that you are using to handle IT/S3M/MOD/XM/FT playback.
+Define `M4P_IMPLEMENTATION` before including `m4p.h` in one source file within your project. It can then be included anywhere else that it needs to be referenced.
 
 To compile a test program, please use the CMakeLists file in the `example` directory. It will build a small program that displays a window and replays an embedded MOD file.
   - The test program uses the Sokol libraries which are zlib-licensed and is based on the mod player example from sokol-samples, which is MIT licensed. Neither of these licenses affect mod4play when compiled on its own.

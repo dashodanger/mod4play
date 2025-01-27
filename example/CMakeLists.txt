@@ -13,19 +13,10 @@ add_executable(
   m4player-sapp.c
 )
 
-add_library(
-  m4p
-  ../m4p.c
-)
-
-set(M4PLAYER_LINK_LIBRARIES m4p)
-
 # sokol_app/sokol_audio linked libraries
 if (CMAKE_HOST_LINUX)
-  set(M4PLAYER_LINK_LIBRARIES ${M4PLAYER_LINK_LIBRARIES} asound X11 Xi Xcursor GL dl pthread m)
+  target_link_libraries(m4player asound X11 Xi Xcursor GL dl pthread m)
 endif()
-
-target_link_libraries(m4player ${M4PLAYER_LINK_LIBRARIES}) 
 
 add_custom_command(
   TARGET m4player

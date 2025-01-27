@@ -5,6 +5,10 @@
 //  sokol_audio.h
 //------------------------------------------------------------------------------
 
+// Have to include this before Sokol headers to prevent the 'Status' define
+// from goofing things
+#define M4P_IMPLEMENTATION
+#include "../m4p.h"
 #define SOKOL_GLCORE33
 #define SOKOL_GFX_IMPL
 #define SOKOL_AUDIO_IMPL
@@ -16,7 +20,6 @@
 #include "sokol/sokol_audio.h"
 #include "sokol/sokol_log.h"
 #include "sokol/sokol_glue.h"
-#include "../m4p.h"
 #include "data/mods.h"
 #include <assert.h>
 #include <math.h>
