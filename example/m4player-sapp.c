@@ -25,6 +25,7 @@
 
 static int      user_mod_size = 0;
 static uint8_t *user_mod_buffer = NULL;
+static bool     mod_playing = false;
 
 // common function to read sample stream from mod4play and convert to float
 static void read_samples(float* buffer, int num_samples) {
@@ -37,8 +38,11 @@ static void read_samples(float* buffer, int num_samples) {
 // stream callback, called by sokol_audio when new samples are needed,
 // on most platforms, this runs on a separate thread
 static void stream_cb(float* buffer, int num_frames, int num_channels, void* user_data) {
-    const int num_samples = num_frames * num_channels;
-    read_samples(buffer, num_samples);
+    if (mod_playing)
+    {
+        const int num_samples = num_frames * num_channels;
+        read_samples(buffer, num_samples);
+    }
 }
 
 static void init(void* user_data) {
@@ -63,7 +67,10 @@ static void init(void* user_data) {
         mod_good = m4p_LoadFromData(embed_disco_feva_baby_s3m, sizeof(embed_disco_feva_baby_s3m), saudio_sample_rate(), M4PLAYER_SRCBUF_SAMPLES);
         
     if (mod_good)
+    {
         m4p_PlaySong();
+        mod_playing = true;
+    }
     else
     {
         printf("M4Player: Error starting playback\n");
