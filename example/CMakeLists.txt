@@ -14,13 +14,10 @@ add_executable(
 )
 
 # sokol_app/sokol_audio linked libraries
-if (CMAKE_HOST_LINUX)
+if (WIN32 OR MINGW)
+  target_compile_definitions (m4player PUBLIC SOKOL_D3D11)
+  target_link_libraries(m4player d3d11 winmm kernel32)
+elseif (CMAKE_HOST_LINUX)
+  target_compile_definitions (m4player PUBLIC SOKOL_GLCORE33)
   target_link_libraries(m4player asound X11 Xi Xcursor GL dl pthread m)
 endif()
-
-add_custom_command(
-  TARGET m4player
-  POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E copy "$<TARGET_FILE:m4player>"
-          "${CMAKE_CURRENT_LIST_DIR}"
-)

@@ -9,12 +9,7 @@
 // from goofing things
 #define M4P_IMPLEMENTATION
 #include "../m4p.h"
-#define SOKOL_GLCORE33
-#define SOKOL_GFX_IMPL
-#define SOKOL_AUDIO_IMPL
-#define SOKOL_LOG_IMPL
-#define SOKOL_APP_IMPL
-#define SOKOL_GLUE_IMPL
+#define SOKOL_IMPL
 #include "sokol/sokol_app.h"
 #include "sokol/sokol_gfx.h"
 #include "sokol/sokol_audio.h"
@@ -27,6 +22,9 @@
 #include <string.h>
 
 #define M4PLAYER_SRCBUF_SAMPLES (4096)
+
+static int      user_mod_size = 0;
+static uint8_t *user_mod_buffer = NULL;
 
 // common function to read sample stream from mod4play and convert to float
 static void read_samples(float* buffer, int num_samples) {
@@ -43,7 +41,7 @@ static void stream_cb(float* buffer, int num_frames, int num_channels, void* use
     read_samples(buffer, num_samples);
 }
 
-void init(void* user_data) {
+static void init(void* user_data) {
     // setup sokol_gfx
     sg_setup(&(sg_desc){
         .context = sapp_sgcontext(),
@@ -57,11 +55,23 @@ void init(void* user_data) {
         .logger.func = slog_func,
     });
 
-    m4p_LoadFromData(embed_disco_feva_baby_s3m, sizeof(embed_disco_feva_baby_s3m), saudio_sample_rate(), M4PLAYER_SRCBUF_SAMPLES);
-    m4p_PlaySong();
+    bool mod_good = false;
+
+    if (user_mod_buffer != NULL)
+        mod_good = m4p_LoadFromData(user_mod_buffer, user_mod_size, saudio_sample_rate(), M4PLAYER_SRCBUF_SAMPLES);
+    else
+        mod_good = m4p_LoadFromData(embed_disco_feva_baby_s3m, sizeof(embed_disco_feva_baby_s3m), saudio_sample_rate(), M4PLAYER_SRCBUF_SAMPLES);
+        
+    if (mod_good)
+        m4p_PlaySong();
+    else
+    {
+        printf("M4Player: Error starting playback\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
-void frame(void* user_data) {
+static void frame(void* user_data) {
     (void)user_data;
     sg_pass_action pass_action = {
         .colors[0] = { .load_action = SG_LOADACTION_CLEAR, .clear_value = { 0.4f, 0.7f, 1.0f, 1.0f } }
@@ -71,17 +81,53 @@ void frame(void* user_data) {
     sg_commit();
 }
 
-void cleanup(void* user_data) {
+static void cleanup(void* user_data) {
     (void)user_data;
     saudio_shutdown();
     m4p_Stop();
     m4p_Close();
     m4p_FreeSong();
+    if (user_mod_buffer)
+    {
+        free(user_mod_buffer);
+        user_mod_buffer = NULL;
+        user_mod_size = 0;
+    }
     sg_shutdown();
 }
 
 sapp_desc sokol_main(int argc, char* argv[]) {
-    (void)argc; (void)argv;
+    // Really simple, assumes the first argument passed is a filename to open;
+    // make something more robust for the real world
+    if (argc > 1)
+    {
+        FILE *user_mod_file = fopen(argv[1], "rb");
+        if (user_mod_file != NULL)
+        {
+            long cur_pos = ftell(user_mod_file);
+            fseek(user_mod_file, 0, SEEK_END);
+            user_mod_size = (int)ftell(user_mod_file);
+            fseek(user_mod_file, cur_pos, SEEK_SET);
+            if (user_mod_size > 0)
+            {
+                user_mod_buffer = (uint8_t *)calloc(user_mod_size, 1);
+                if (fread(user_mod_buffer, 1, user_mod_size, user_mod_file) != user_mod_size)
+                {
+                    free(user_mod_buffer);
+                    user_mod_buffer = NULL;
+                    user_mod_size = 0;
+                }
+            }
+            fclose(user_mod_file);
+            user_mod_file = NULL;
+        }
+        else
+        {
+            printf("Error opening %s (is this an IT/S3M/XM/FT/MOD file?)\n", argv[1]);
+            printf("Will fallback to embedded song.\n");
+        }
+        
+    }
     return (sapp_desc){
         .init_userdata_cb = init,
         .frame_userdata_cb = frame,
