@@ -71,11 +71,11 @@ jobs:
         run: |
           $env:Path = "${{github.workspace}}\w64devkit\bin;" + $env:Path
           cmake example -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_FLAGS="-isystem ${{github.workspace}}\w64devkit\include" -G "MinGW Makefiles"
-          cmake --build example/build --config ${{env.BUILD_TYPE}}
-          strip example/build/m4player.exe
+          cmake --build build --config ${{env.BUILD_TYPE}}
+          strip build/m4player.exe
       - uses: actions/upload-artifact@v4
         with:
           name: m4player-win32
           path: |
-            example/build/m4player.exe
+            build/m4player.exe
           retention-days: ${{env.RETENTION_DAYS}}
