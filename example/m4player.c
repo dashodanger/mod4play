@@ -45,7 +45,8 @@ static int      buffer_size = 0;
 
 // stream callback, called by sokol_audio when new samples are needed,
 // on most platforms, this runs on a separate thread
-static void stream_cb(float* buffer, int num_frames, int num_channels) {
+static void stream_cb(float* buffer, int num_frames, int num_channels) 
+{
     if (mod_playing)
     {
         assert(num_frames <= buffer_size);
@@ -55,7 +56,8 @@ static void stream_cb(float* buffer, int num_frames, int num_channels) {
         memset(buffer, 0, num_frames * num_channels * sizeof(float));
 }
 
-static void print_help() {
+static void print_help() 
+{
 	printf("\nUsage: m4player [song=file]\n"
 		   "\n"
 		   "Supported song formats:\n"
@@ -74,7 +76,8 @@ int main(int argc, char *argv[]) {
 	init_args.argv = argv;
 	sargs_setup(&init_args);
 
-	if (sargs_exists("help")) {
+	if (sargs_exists("help") || (argc > 1 && !sargs_exists("song"))) 
+	{
 		print_help();
 		sargs_shutdown();
 		exit(EXIT_SUCCESS);
@@ -124,7 +127,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-	printf("Playing %s....press enter to exit\n", song);
+	printf("Playing %s....press enter to exit\n", *song != '\0' ? song : "Disco Feva Baby.s3m");
 	fflush(stdout);
 	getchar();
 
