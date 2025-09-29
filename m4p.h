@@ -118,6 +118,9 @@ void m4p_FreeSong(void);
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 // define these to use custom memory management functions
 #ifndef M4P_MALLOC
