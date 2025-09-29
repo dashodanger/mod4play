@@ -1,19 +1,24 @@
 # mod4play
 This is a unified interface for the ft2play (https://github.com/8bitbubsy/ft2play) and it2play (https://github.com/8bitbubsy/it2play) libraries by Olav Sørensen for embedding in game engines or other applications.
 SDL and WinMM dependencies have been removed;
-the library is intended to receive an in-memory IT, S3M, MOD, FT or XM format module and produce samples on demand. All mixing drivers other than SB16/SND_MASM have been removed for simplicity.
+the library is intended to receive a IT, S3M, MOD, FT or XM format module from memory or disk and produce samples on demand. All mixing drivers other than SB16/SND_MASM have been removed for simplicity.
 
 # Compilation
 Define `M4P_IMPLEMENTATION` before including `m4p.h` in one source file within your project. It can then be included anywhere else that it needs to be referenced. `M4P_MALLOC`, `M4P_CALLOC` and `M4P_FREE` can also be defined prior to including the implementation to override regular usage of malloc/calloc/free.
 
-To compile a test program, please use the CMakeLists file in the `example` directory. It will build a small program that displays a window and replays an embedded MOD file, or if passed a filepath as the first parameter will attempt to play it.
-  - The test program uses the Sokol libraries which are zlib-licensed and is based on the mod player example from sokol-samples, which is MIT licensed. Neither of these licenses affect mod4play when compiled on its own.
+To compile a test program, please use the CMakeLists file in the `example` directory. It has a command-line interface whose usage can be shown with the 'help' parameter. If a filepath to a song is not provided, the program will use its embedded MOD file.
+
+If a song is successfully loaded, playback will begin. The song will loop indefinitely. Press enter or issue a break command to exit at any time.
+
+Note that the test program uses the Sokol libraries which are zlib-licensed and is based on the mod player example from sokol-samples, which is MIT licensed. Neither of these licenses affect mod4play when compiled on its own.
 
 # Usage
 - (Optional step, this will also be done internally when attempting to load the module) Call `m4p_TestFromData` with a pointer to a memory buffer containing the tracker module and its length as parameters to test if the module is a format that is compatible with mod4play. A result of zero indicates that it is an unknown format and should not be used.
-- Load a supported module with the `m4p_LoadFromData` function, passing a pointer to a memory buffer containing the module, its length, the desired frequency/sample rate, and the desired mixing buffer size as parameters. The mixing buffer size should correspond to the size of the buffer you are planning on using as output for generated samples. This function will return `false` if a replayer was not successfully initialized.
+  - The `m4p_TestFromFile` function may be used with a filename to test a module that is on disk instead.
+- Load a supported module with the `m4p_LoadFromData` function, passing a pointer to a memory buffer containing the module, its length, the desired frequency/sample rate, and the desired mixing buffer size as parameters. The mixing buffer size should represent the number of stereo samples that your output buffer can safely hold. This function will return `false` if a replayer was not successfully initialized.
   - Once successfully loaded, the memory buffer that you passed to this function can be safely freed if you are not otherwise using it.
+  - `m4p_LoadFromFile` may be used with a filename to load a module from disk instead.
 - Prepare the module for playback with the `m4p_PlaySong` function. This does not require any parameters and will not generate any audio yet.
-- In an appropriate place in your program, call the `m4p_GenerateSamples` function, passing a pointer to an initialized buffer to store the generated samples and the number of desired samples to generate as parameters. The number of samples to generate should be no more than the size of the buffer divided by `sizeof(int16_t)`. Generated samples will be in the form of pairs of signed 16-bit integers.
-  - Alternatively, `m4p_GenerateFloatSamples` can be used in a conjunction with a number of samples representing the buffer size divided by `sizeof(float)` to produce floating-point output.
+- In an appropriate place in your program, call the `m4p_GenerateSamples` function, passing a pointer to an initialized buffer to store the generated samples and the number of desired samples to generate as parameters. The number of samples to generate should be no more than the raw size of the buffer divided by 2 (stereo) divided by `sizeof(int16_t)`. Generated samples will be interleaved (L/R/L/R/etc...)
+  - Alternatively, `m4p_GenerateFloatSamples` can be used in a conjunction with a number of samples representing the raw buffer size divided by 2 (stereo) divided by `sizeof(float)` to produce floating-point output.
 - When finished with playback, call the `m4p_Close` function to reset the internal replayer, and the `m4p_FreeSong` function to free the internally allocated buffer containing the module. Neither function requires any parameters.
