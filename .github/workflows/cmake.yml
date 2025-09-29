@@ -56,5 +56,5 @@ jobs:
         with:
           name: m4player-win64
           path: |
-            build/m4player.exe
+            example/build/m4player.exe
           retention-days: ${{env.RETENTION_DAYS}}
