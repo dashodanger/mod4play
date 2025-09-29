@@ -58,3 +58,24 @@ jobs:
           path: |
             example/build/${{env.BUILD_TYPE}}/m4player.exe
           retention-days: ${{env.RETENTION_DAYS}}
+
+  build-win32:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download w64devkit
+        run: invoke-webrequest https://github.com/skeeto/w64devkit/releases/download/v2.1.0/w64devkit-x86-2.1.0.exe -outfile ${{github.workspace}}\w64devkit.exe
+      - name: Extract w64devkit
+        run: ${{github.workspace}}\w64devkit.exe -y
+      - name: Set environment variables and build
+        run: |
+          $env:Path = "${{github.workspace}}\w64devkit\bin;" + $env:Path
+          cmake example -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_FLAGS="-isystem ${{github.workspace}}\w64devkit\include" -G "MinGW Makefiles"
+          cmake --build example/build --config ${{env.BUILD_TYPE}}
+          strip example/build/m4player.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: m4player-win32
+          path: |
+            example/build/m4player.exe
+          retention-days: ${{env.RETENTION_DAYS}}
